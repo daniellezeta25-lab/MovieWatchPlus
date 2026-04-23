@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MovieWatch+ - Recommendations</title>
+    <style>
+        body { font-family: Arial; margin: 0; padding: 20px; background: #f0f2f5; }
+        .header { background: #1a1a2e; color: white; padding: 15px; margin-bottom: 20px; }
+        nav a { color: white; text-decoration: none; margin-right: 20px; }
+        .movie-grid { display: flex; gap: 15px; flex-wrap: wrap; }
+        .movie-card { background: white; padding: 10px; border-radius: 8px; width: 150px; text-align: center; }
+        .poster { width: 100%; height: 150px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+        .rec-badge { background: #ff6b6b; color: white; padding: 2px 8px; border-radius: 20px; font-size: 12px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎬 MovieWatch+</h1>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="watchlist.html">Watchlist</a>
+            <a href="watched.html">Watched</a>
+            <a href="recommendations.html">Recommendations</a>
+            <a href="profile.html">Profile</a>
+        </nav>
+    </div>
+    <h2>🎯 Recommended for You</h2>
+    <div class="movie-grid">
+        <div class="movie-card">
+            <div class="poster">🎬</div>
+            <h4>Memento</h4>
+            <p>2000</p>
+            <span class="rec-badge">Based on: Thriller</span>
+        </div>
+        <div class="movie-card">
+            <div class="poster">✈️</div>
+            <h4>Dunkirk</h4>
+            <p>2017</p>
+            <span class="rec-badge">Based on: War</span>
+        </div>
+        <div class="movie-card">
+            <div class="poster">🤯</div>
+            <h4>Tenet</h4>
+            <p>2020</p>
+            <span class="rec-badge">Based on: Sci-Fi</span>
+        </div>
+    </div>
+</body>
+</html>
