@@ -36,6 +36,28 @@
             color: #ff6b6b;
         }
 
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .username-display {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
         .tabs {
             display: flex;
             gap: 5px;
@@ -59,6 +81,65 @@
 
         .tab-btn.active {
             background: #ff6b6b;
+        }
+
+        /* Auth Forms */
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .auth-card h2 {
+            margin-bottom: 20px;
+            color: #1a1a2e;
+        }
+
+        .auth-card input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .auth-card button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .auth-card .switch {
+            margin-top: 15px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .auth-card .switch:hover {
+            color: #ff6b6b;
         }
 
         /* Search Bar */
@@ -86,11 +167,6 @@
             font-weight: bold;
         }
 
-        .search-btn:hover {
-            background: #ff5252;
-        }
-
-        /* Main Container */
         .container {
             max-width: 1200px;
             margin: 30px auto;
@@ -105,7 +181,6 @@
             display: block;
         }
 
-        /* Stats Cards */
         .stats {
             display: flex;
             gap: 20px;
@@ -119,7 +194,7 @@
             border-radius: 12px;
             flex: 1;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .stat-card h3 {
@@ -134,7 +209,6 @@
             color: #1a1a2e;
         }
 
-        /* Movie Grid */
         .movie-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -146,7 +220,7 @@
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             transition: transform 0.3s;
         }
 
@@ -220,7 +294,6 @@
             color: #1a1a2e;
         }
 
-        /* Watchlist/Watched Items */
         .list-item {
             background: white;
             padding: 15px;
@@ -241,12 +314,6 @@
             font-weight: bold;
         }
 
-        .list-item-year {
-            color: #666;
-            font-size: 12px;
-        }
-
-        /* Rating Stars */
         .stars {
             display: inline-flex;
             gap: 5px;
@@ -263,21 +330,15 @@
             color: #ffc107;
         }
 
-        /* Review Box */
-        .review-box {
-            margin-top: 10px;
-        }
-
         .review-text {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 8px;
+            margin-top: 10px;
             font-family: inherit;
-            resize: vertical;
         }
 
-        /* Profile */
         .profile-card {
             background: white;
             padding: 30px;
@@ -285,7 +346,6 @@
             text-align: center;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             padding: 20px;
@@ -293,7 +353,6 @@
             margin-top: 40px;
         }
 
-        /* Toast Message */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -319,178 +378,114 @@
 </head>
 <body>
     <div class="toast" id="toast"></div>
+    <div id="authContainer"></div>
 
-    <div class="header">
-        <div class="logo">
-            <h1>🎬 Movie<span>Watch+</span></h1>
+    <div id="appContent" style="display: none;">
+        <div class="header">
+            <div class="logo">
+                <h1>🎬 Movie<span>Watch+</span></h1>
+            </div>
+            <div class="user-info">
+                <span class="username-display" id="usernameDisplay"></span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
         </div>
-        <div class="tabs">
+        <div class="tabs" id="tabsContainer">
             <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
             <button class="tab-btn" onclick="showTab('watchlist')">Watchlist</button>
             <button class="tab-btn" onclick="showTab('watched')">Watched</button>
             <button class="tab-btn" onclick="showTab('recommendations')">Recommendations</button>
             <button class="tab-btn" onclick="showTab('profile')">Profile</button>
         </div>
-    </div>
 
-    <div class="container">
-        <!-- Dashboard Tab -->
-        <div id="dashboard" class="tab-content active">
-            <div class="stats" id="statsContainer">
-                <!-- Stats will be populated by JS -->
+        <div class="container">
+            <div id="dashboard" class="tab-content active">
+                <div class="stats" id="statsContainer"></div>
+                <h2>🎯 Recommended for You</h2>
+                <div class="movie-grid" id="dashboardRecs"></div>
             </div>
-            <h2>🎯 Recommended for You</h2>
-            <div class="movie-grid" id="dashboardRecs">
-                <!-- Recommendations will be populated -->
+
+            <div id="watchlist" class="tab-content">
+                <h2>📋 My Watchlist</h2>
+                <div id="watchlistContainer"></div>
             </div>
-        </div>
 
-        <!-- Watchlist Tab -->
-        <div id="watchlist" class="tab-content">
-            <h2>📋 My Watchlist</h2>
-            <div id="watchlistContainer"></div>
-        </div>
+            <div id="watched" class="tab-content">
+                <h2>✅ Watched Movies</h2>
+                <div id="watchedContainer"></div>
+            </div>
 
-        <!-- Watched Tab -->
-        <div id="watched" class="tab-content">
-            <h2>✅ Watched Movies</h2>
-            <div id="watchedContainer"></div>
-        </div>
+            <div id="recommendations" class="tab-content">
+                <h2>🎯 Recommended for You</h2>
+                <p style="margin-bottom: 20px; color: #666;">Based on your watched movies, here are some suggestions:</p>
+                <div class="movie-grid" id="recommendationsGrid"></div>
+            </div>
 
-        <!-- Recommendations Tab -->
-        <div id="recommendations" class="tab-content">
-            <h2>🎯 Recommended for You</h2>
-            <p style="margin-bottom: 20px; color: #666;">Based on your watched movies, here are some suggestions:</p>
-            <div class="movie-grid" id="recommendationsGrid"></div>
-        </div>
-
-        <!-- Profile Tab -->
-        <div id="profile" class="tab-content">
-            <div class="profile-card">
-                <h2>👤 User Profile</h2>
-                <p><strong>Username:</strong> moviebuff</p>
-                <p><strong>Member Since:</strong> April 2026</p>
-                <p><strong>Favorite Genre:</strong> <span id="favGenre">-</span></p>
-                <button class="btn btn-danger" onclick="logout()" style="margin-top: 20px;">Logout</button>
+            <div id="profile" class="tab-content">
+                <div class="profile-card">
+                    <h2>👤 User Profile</h2>
+                    <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+                    <p><strong>Member Since:</strong> <span id="memberSince"></span></p>
+                    <p><strong>Favorite Genre:</strong> <span id="favGenre">-</span></p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="footer">
-        <p>MovieWatch+ © 2026 | Track your favorite movies</p>
+        <div class="footer">
+            <p>MovieWatch+ © 2026 | Track your favorite movies</p>
+        </div>
     </div>
 
     <script>
-        // ============================================
-        // DATA STORAGE (Using localStorage)
-        // ============================================
-        
-        // Sample movies for demo
-       const allMovies = [
-    { id: 1, title: "Inception", year: 2010, genre: "Sci-Fi", poster: "🎬", rating: 8.8 },
-    { id: 2, title: "Interstellar", year: 2014, genre: "Sci-Fi", poster: "🚀", rating: 8.6 },
-    { id: 3, title: "The Dark Knight", year: 2008, genre: "Action", poster: "🦇", rating: 9.0 },
-    { id: 4, title: "Memento", year: 2000, genre: "Thriller", poster: "🔄", rating: 8.4 },
-    { id: 5, title: "Dunkirk", year: 2017, genre: "War", poster: "✈️", rating: 7.9 },
-    { id: 6, title: "Tenet", year: 2020, genre: "Sci-Fi", poster: "🔄", rating: 7.4 },
-    { id: 7, title: "The Prestige", year: 2006, genre: "Drama", poster: "🎩", rating: 8.5 },
-    { id: 8, title: "Batman Begins", year: 2005, genre: "Action", poster: "🦇", rating: 8.2 },
-    
-    // ========== ADDED MOVIES ==========
-    
-    // Action Movies
-    { id: 9, title: "Fight Club", year: 1999, genre: "Drama", poster: "🧼", rating: 8.8 },
-    { id: 10, title: "The Matrix", year: 1999, genre: "Sci-Fi", poster: "💊", rating: 8.7 },
-    { id: 11, title: "Gladiator", year: 2000, genre: "Action", poster: "⚔️", rating: 8.5 },
-    { id: 12, title: "John Wick", year: 2014, genre: "Action", poster: "🔫", rating: 7.4 },
-    { id: 13, title: "Mad Max: Fury Road", year: 2015, genre: "Action", poster: "🏜️", rating: 8.5 },
-    { id: 14, title: "Die Hard", year: 1988, genre: "Action", poster: "🏢", rating: 8.2 },
-    { id: 15, title: "Terminator 2", year: 1991, genre: "Sci-Fi", poster: "🤖", rating: 8.6 },
-    { id: 16, title: "Aliens", year: 1986, genre: "Sci-Fi", poster: "👽", rating: 8.4 },
-    { id: 17, title: "Predator", year: 1987, genre: "Action", poster: "🌿", rating: 7.8 },
-    
-    // Drama Movies
-    { id: 18, title: "Pulp Fiction", year: 1994, genre: "Crime", poster: "🔫", rating: 8.9 },
-    { id: 19, title: "Forrest Gump", year: 1994, genre: "Drama", poster: "🍫", rating: 8.8 },
-    { id: 20, title: "The Shawshank Redemption", year: 1994, genre: "Drama", poster: "📖", rating: 9.3 },
-    { id: 21, title: "The Godfather", year: 1972, genre: "Crime", poster: "👔", rating: 9.2 },
-    { id: 22, title: "The Godfather Part II", year: 1974, genre: "Crime", poster: "👔", rating: 9.0 },
-    { id: 23, title: "Schindler's List", year: 1993, genre: "Drama", poster: "📜", rating: 9.0 },
-    { id: 24, title: "Goodfellas", year: 1990, genre: "Crime", poster: "🍝", rating: 8.7 },
-    { id: 25, title: "The Departed", year: 2006, genre: "Crime", poster: "🐀", rating: 8.5 },
-    { id: 26, title: "Whiplash", year: 2014, genre: "Drama", poster: "🥁", rating: 8.5 },
-    { id: 27, title: "Joker", year: 2019, genre: "Drama", poster: "🤡", rating: 8.8 },
-    { id: 28, title: "A Beautiful Mind", year: 2001, genre: "Drama", poster: "🧠", rating: 8.2 },
-    { id: 29, title: "The Green Mile", year: 1999, genre: "Drama", poster: "⚡", rating: 8.6 },
-    
-    // Thriller/Horror
-    { id: 30, title: "The Silence of the Lambs", year: 1991, genre: "Thriller", poster: "🐑", rating: 8.6 },
-    { id: 31, title: "Se7en", year: 1995, genre: "Thriller", poster: "📦", rating: 8.6 },
-    { id: 32, title: "Parasite", year: 2019, genre: "Thriller", poster: "🏠", rating: 8.6 },
-    { id: 33, title: "Gone Girl", year: 2014, genre: "Thriller", poster: "📰", rating: 8.1 },
-    { id: 34, title: "Prisoners", year: 2013, genre: "Thriller", poster: "🔍", rating: 8.2 },
-    { id: 35, title: "The Sixth Sense", year: 1999, genre: "Thriller", poster: "👻", rating: 8.2 },
-    { id: 36, title: "Get Out", year: 2017, genre: "Horror", poster: "🥄", rating: 7.8 },
-    { id: 37, title: "A Quiet Place", year: 2018, genre: "Horror", poster: "🔇", rating: 7.5 },
-    
-    // Comedy Movies
-    { id: 38, title: "The Hangover", year: 2009, genre: "Comedy", poster: "🍻", rating: 7.7 },
-    { id: 39, title: "Superbad", year: 2007, genre: "Comedy", poster: "🚓", rating: 7.6 },
-    { id: 40, title: "Bridesmaids", year: 2011, genre: "Comedy", poster: "👰", rating: 6.8 },
-    { id: 41, title: "Step Brothers", year: 2008, genre: "Comedy", poster: "👬", rating: 6.9 },
-    
-    // Animation
-    { id: 42, title: "Spider-Man: Into the Spider-Verse", year: 2018, genre: "Animation", poster: "🕷️", rating: 8.4 },
-    { id: 43, title: "Toy Story", year: 1995, genre: "Animation", poster: "🤠", rating: 8.3 },
-    { id: 44, title: "Up", year: 2009, genre: "Animation", poster: "🎈", rating: 8.3 },
-    { id: 45, title: "Inside Out", year: 2015, genre: "Animation", poster: "😊", rating: 8.2 },
-    { id: 46, title: "Coco", year: 2017, genre: "Animation", poster: "💀", rating: 8.4 },
-    { id: 47, title: "The Lion King", year: 1994, genre: "Animation", poster: "🦁", rating: 8.5 },
-    
-    // Romance
-    { id: 48, title: "Titanic", year: 1997, genre: "Romance", poster: "🚢", rating: 7.9 },
-    { id: 49, title: "The Notebook", year: 2004, genre: "Romance", poster: "📓", rating: 7.8 },
-    { id: 50, title: "La La Land", year: 2016, genre: "Romance", poster: "🎹", rating: 8.0 },
-    { id: 51, title: "Eternal Sunshine", year: 2004, genre: "Romance", poster: "🧠", rating: 8.3 },
-    
-    // War/Historical
-    { id: 52, title: "Saving Private Ryan", year: 1998, genre: "War", poster: "🔫", rating: 8.6 },
-    { id: 53, title: "1917", year: 2019, genre: "War", poster: "📯", rating: 8.3 },
-    { id: 54, title: "Apocalypse Now", year: 1979, genre: "War", poster: "🚤", rating: 8.4 },
-    { id: 55, title: "Braveheart", year: 1995, genre: "War", poster: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", rating: 8.4 },
-    
-    // Sci-Fi (additional)
-    { id: 56, title: "Blade Runner 2049", year: 2017, genre: "Sci-Fi", poster: "🌆", rating: 8.0 },
-    { id: 57, title: "Arrival", year: 2016, genre: "Sci-Fi", poster: "👽", rating: 7.9 },
-    { id: 58, title: "Gravity", year: 2013, genre: "Sci-Fi", poster: "🌌", rating: 7.7 },
-    { id: 59, title: "The Martian", year: 2015, genre: "Sci-Fi", poster: "🪴", rating: 8.0 },
-    
-    // Crime (additional)
-    { id: 60, title: "The Usual Suspects", year: 1995, genre: "Crime", poster: "🚢", rating: 8.5 },
-    { id: 61, title: "Heat", year: 1995, genre: "Crime", poster: "🔥", rating: 8.3 },
-    { id: 62, title: "Scarface", year: 1983, genre: "Crime", poster: "🔫", rating: 8.3 }
-];
+        // ========== MOVIE DATABASE ==========
+        const allMovies = [
+            { id: 1, title: "Inception", year: 2010, genre: "Sci-Fi", poster: "🎬", rating: 8.8 },
+            { id: 2, title: "Interstellar", year: 2014, genre: "Sci-Fi", poster: "🚀", rating: 8.6 },
+            { id: 3, title: "The Dark Knight", year: 2008, genre: "Action", poster: "🦇", rating: 9.0 },
+            { id: 4, title: "Fight Club", year: 1999, genre: "Drama", poster: "🧼", rating: 8.8 },
+            { id: 5, title: "The Matrix", year: 1999, genre: "Sci-Fi", poster: "💊", rating: 8.7 },
+            { id: 6, title: "Pulp Fiction", year: 1994, genre: "Crime", poster: "🔫", rating: 8.9 },
+            { id: 7, title: "The Godfather", year: 1972, genre: "Crime", poster: "👔", rating: 9.2 },
+            { id: 8, title: "The Shawshank Redemption", year: 1994, genre: "Drama", poster: "📖", rating: 9.3 },
+            { id: 9, title: "Gladiator", year: 2000, genre: "Action", poster: "⚔️", rating: 8.5 },
+            { id: 10, title: "Titanic", year: 1997, genre: "Romance", poster: "🚢", rating: 7.9 },
+            { id: 11, title: "Parasite", year: 2019, genre: "Thriller", poster: "🏠", rating: 8.6 },
+            { id: 12, title: "Joker", year: 2019, genre: "Drama", poster: "🤡", rating: 8.8 },
+            { id: 13, title: "Toy Story", year: 1995, genre: "Animation", poster: "🤠", rating: 8.3 },
+            { id: 14, title: "Up", year: 2009, genre: "Animation", poster: "🎈", rating: 8.3 },
+            { id: 15, title: "John Wick", year: 2014, genre: "Action", poster: "🔫", rating: 7.4 }
+        ];
 
-        // Initialize data from localStorage or use defaults
-        let watchlist = JSON.parse(localStorage.getItem('watchlist')) || [1, 3]; // Inception and Dark Knight
-        let watched = JSON.parse(localStorage.getItem('watched')) || [];
-        let ratings = JSON.parse(localStorage.getItem('ratings')) || {};
-        let reviews = JSON.parse(localStorage.getItem('reviews')) || {};
+        // ========== USER MANAGEMENT ==========
+        let users = JSON.parse(localStorage.getItem('moviewatch_users')) || [];
+        let currentUser = null;
 
-        // Save data to localStorage
-        function saveData() {
-            localStorage.setItem('watchlist', JSON.stringify(watchlist));
-            localStorage.setItem('watched', JSON.stringify(watched));
-            localStorage.setItem('ratings', JSON.stringify(ratings));
-            localStorage.setItem('reviews', JSON.stringify(reviews));
+        // Get user data
+        function getUserData(username) {
+            const user = users.find(u => u.username === username);
+            if (!user) return null;
+            return {
+                watchlist: user.watchlist || [],
+                watched: user.watched || [],
+                ratings: user.ratings || {},
+                reviews: user.reviews || {},
+                joinDate: user.joinDate || new Date().toISOString()
+            };
         }
 
-        // Helper function to get movie by ID
+        function saveUserData(username, data) {
+            const userIndex = users.findIndex(u => u.username === username);
+            if (userIndex !== -1) {
+                users[userIndex] = { ...users[userIndex], ...data };
+                localStorage.setItem('moviewatch_users', JSON.stringify(users));
+            }
+        }
+
+        // Helper functions
         function getMovieById(id) {
             return allMovies.find(m => m.id === id);
         }
 
-        // Helper function to show toast message
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -501,221 +496,20 @@
             }, 2000);
         }
 
-        // ============================================
-        // CORE FUNCTIONALITY
-        // ============================================
+        // Update UI with current user data
+        let currentUserData = null;
 
-        // Add movie to watchlist
-        function addToWatchlist(movieId) {
-            if (watchlist.includes(movieId)) {
-                showToast("Movie already in watchlist!", true);
-                return;
-            }
-            if (watched.includes(movieId)) {
-                showToast("You've already watched this movie!", true);
-                return;
-            }
-            watchlist.push(movieId);
-            saveData();
-            showToast("✅ Added to watchlist!");
-            refreshAll();
-        }
-
-        // Remove from watchlist
-        function removeFromWatchlist(movieId) {
-            watchlist = watchlist.filter(id => id !== movieId);
-            saveData();
-            showToast("🗑️ Removed from watchlist");
-            refreshAll();
-        }
-
-        // Mark as watched
-        function markAsWatched(movieId) {
-            if (watched.includes(movieId)) {
-                showToast("Already marked as watched!", true);
-                return;
-            }
-            // Remove from watchlist if present
-            watchlist = watchlist.filter(id => id !== movieId);
-            watched.push(movieId);
-            saveData();
-            showToast("✅ Marked as watched!");
-            refreshAll();
-        }
-
-        // Rate a movie
-        function rateMovie(movieId, rating) {
-            ratings[movieId] = rating;
-            saveData();
-            showToast(`⭐ Rated ${rating} stars!`);
-            refreshAll();
-        }
-
-        // Add review
-        function addReview(movieId) {
-            const reviewText = document.getElementById(`review-${movieId}`)?.value;
-            if (reviewText) {
-                reviews[movieId] = reviewText;
-                saveData();
-                showToast("📝 Review saved!");
-                refreshAll();
-            }
-        }
-
-        // Get user's favorite genre based on watched movies
-        function getFavoriteGenre() {
-            if (watched.length === 0) return "None";
-            const genreCount = {};
-            watched.forEach(movieId => {
-                const movie = getMovieById(movieId);
-                if (movie) {
-                    genreCount[movie.genre] = (genreCount[movie.genre] || 0) + 1;
-                }
-            });
-            const topGenre = Object.keys(genreCount).reduce((a, b) => genreCount[a] > genreCount[b] ? a : b, null);
-            return topGenre || "None";
-        }
-
-        // Get recommendations based on favorite genre
-        function getRecommendations() {
-            const favGenre = getFavoriteGenre();
-            if (favGenre === "None") {
-                return allMovies.filter(m => !watched.includes(m.id) && !watchlist.includes(m.id)).slice(0, 4);
-            }
-            return allMovies.filter(m => m.genre === favGenre && !watched.includes(m.id) && !watchlist.includes(m.id)).slice(0, 4);
-        }
-
-        // ============================================
-        // RENDER FUNCTIONS
-        // ============================================
-
-        // Render stats on dashboard
-        function renderStats() {
-            const statsHtml = `
-                <div class="stat-card">
-                    <h3>📋 Watchlist</h3>
-                    <p>${watchlist.length}</p>
-                </div>
-                <div class="stat-card">
-                    <h3>✅ Watched</h3>
-                    <p>${watched.length}</p>
-                </div>
-                <div class="stat-card">
-                    <h3>⭐ Avg Rating</h3>
-                    <p>${(Object.values(ratings).reduce((a, b) => a + b, 0) / (Object.values(ratings).length || 1)).toFixed(1)}/5</p>
-                </div>
-            `;
-            document.getElementById('statsContainer').innerHTML = statsHtml;
-        }
-
-        // Render dashboard recommendations
-        function renderDashboardRecs() {
-            const recs = getRecommendations();
-            const recsHtml = recs.map(movie => `
-                <div class="movie-card">
-                    <div class="movie-poster">${movie.poster}</div>
-                    <div class="movie-info">
-                        <div class="movie-title">${movie.title}</div>
-                        <div class="movie-year">${movie.year} | ${movie.genre}</div>
-                        <div class="movie-rating">⭐ ${movie.rating}/10</div>
-                        <div class="movie-actions">
-                            <button class="btn btn-primary" onclick="addToWatchlist(${movie.id})">➕ Add</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            document.getElementById('dashboardRecs').innerHTML = recsHtml || '<p>No recommendations yet. Watch some movies!</p>';
-        }
-
-        // Render watchlist
-        function renderWatchlist() {
-            if (watchlist.length === 0) {
-                document.getElementById('watchlistContainer').innerHTML = '<p style="text-align:center; padding:40px;">📭 Your watchlist is empty. Search for movies to add!</p>';
-                return;
-            }
-            const watchlistHtml = watchlist.map(movieId => {
-                const movie = getMovieById(movieId);
-                return `
-                    <div class="list-item">
-                        <div class="list-item-info">
-                            <div class="list-item-title">${movie.poster} ${movie.title}</div>
-                            <div class="list-item-year">${movie.year} | ${movie.genre} | ⭐ ${movie.rating}/10</div>
-                        </div>
-                        <div>
-                            <button class="btn btn-primary" onclick="markAsWatched(${movie.id})">✅ Watched</button>
-                            <button class="btn btn-danger" onclick="removeFromWatchlist(${movie.id})">🗑️ Remove</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            document.getElementById('watchlistContainer').innerHTML = watchlistHtml;
-        }
-
-        // Render watched list with ratings and reviews
-        function renderWatched() {
-            if (watched.length === 0) {
-                document.getElementById('watchedContainer').innerHTML = '<p style="text-align:center; padding:40px;">🎬 No watched movies yet. Mark some as watched!</p>';
-                return;
-            }
-            const watchedHtml = watched.map(movieId => {
-                const movie = getMovieById(movieId);
-                const currentRating = ratings[movieId] || 0;
-                const currentReview = reviews[movieId] || '';
-                
-                // Generate star HTML
-                let starsHtml = '';
-                for (let i = 1; i <= 5; i++) {
-                    starsHtml += `<span class="star ${currentRating >= i ? 'selected' : ''}" onclick="rateMovie(${movie.id}, ${i})">★</span>`;
-                }
-                
-                return `
-                    <div class="list-item">
-                        <div class="list-item-info">
-                            <div class="list-item-title">${movie.poster} ${movie.title}</div>
-                            <div class="list-item-year">${movie.year} | ${movie.genre}</div>
-                            <div class="stars">${starsHtml}</div>
-                            <div class="review-box">
-                                <textarea id="review-${movie.id}" class="review-text" rows="2" placeholder="Write your review...">${currentReview}</textarea>
-                                <button class="btn btn-warning" style="margin-top: 5px;" onclick="addReview(${movie.id})">💾 Save Review</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            document.getElementById('watchedContainer').innerHTML = watchedHtml;
-        }
-
-        // Render recommendations page
-        function renderRecommendationsPage() {
-            const recs = getRecommendations();
-            if (recs.length === 0) {
-                document.getElementById('recommendationsGrid').innerHTML = '<p style="text-align:center; padding:40px;">Watch more movies to get recommendations!</p>';
-                return;
-            }
-            const recsHtml = recs.map(movie => `
-                <div class="movie-card">
-                    <div class="movie-poster">${movie.poster}</div>
-                    <div class="movie-info">
-                        <div class="movie-title">${movie.title}</div>
-                        <div class="movie-year">${movie.year} | ${movie.genre}</div>
-                        <div class="movie-rating">⭐ ${movie.rating}/10</div>
-                        <div class="movie-actions">
-                            <button class="btn btn-primary" onclick="addToWatchlist(${movie.id})">➕ Add to Watchlist</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            document.getElementById('recommendationsGrid').innerHTML = recsHtml;
-        }
-
-        // Update favorite genre on profile page
-        function updateProfile() {
-            const favGenre = getFavoriteGenre();
-            document.getElementById('favGenre').innerHTML = favGenre;
-        }
-
-        // Refresh all UI components
         function refreshAll() {
+            if (!currentUser) return;
+            currentUserData = getUserData(currentUser.username);
+            if (!currentUserData) {
+                currentUserData = { watchlist: [], watched: [], ratings: {}, reviews: {}, joinDate: new Date().toISOString() };
+            }
+            
+            document.getElementById('usernameDisplay').innerText = currentUser.username;
+            document.getElementById('profileUsername').innerText = currentUser.username;
+            document.getElementById('memberSince').innerText = new Date(currentUserData.joinDate).toLocaleDateString();
+            
             renderStats();
             renderDashboardRecs();
             renderWatchlist();
@@ -724,65 +518,230 @@
             updateProfile();
         }
 
-        // ============================================
-        // TAB NAVIGATION
-        // ============================================
+        function renderStats() {
+            const statsHtml = `
+                <div class="stat-card"><h3>📋 Watchlist</h3><p>${currentUserData.watchlist.length}</p></div>
+                <div class="stat-card"><h3>✅ Watched</h3><p>${currentUserData.watched.length}</p></div>
+                <div class="stat-card"><h3>⭐ Avg Rating</h3><p>${(Object.values(currentUserData.ratings).reduce((a,b)=>a+b,0) / (Object.values(currentUserData.ratings).length || 1)).toFixed(1)}/5</p></div>
+            `;
+            document.getElementById('statsContainer').innerHTML = statsHtml;
+        }
+
+        function getFavoriteGenre() {
+            if (currentUserData.watched.length === 0) return "None";
+            const genreCount = {};
+            currentUserData.watched.forEach(movieId => {
+                const movie = getMovieById(movieId);
+                if (movie) genreCount[movie.genre] = (genreCount[movie.genre] || 0) + 1;
+            });
+            return Object.keys(genreCount).reduce((a,b) => genreCount[a] > genreCount[b] ? a : b, "None");
+        }
+
+        function getRecommendations() {
+            const favGenre = getFavoriteGenre();
+            if (favGenre === "None") {
+                return allMovies.filter(m => !currentUserData.watched.includes(m.id) && !currentUserData.watchlist.includes(m.id)).slice(0, 4);
+            }
+            return allMovies.filter(m => m.genre === favGenre && !currentUserData.watched.includes(m.id) && !currentUserData.watchlist.includes(m.id)).slice(0, 4);
+        }
+
+        function renderDashboardRecs() {
+            const recs = getRecommendations();
+            document.getElementById('dashboardRecs').innerHTML = recs.map(m => `
+                <div class="movie-card"><div class="movie-poster">${m.poster}</div>
+                <div class="movie-info"><div class="movie-title">${m.title}</div>
+                <div class="movie-year">${m.year} | ${m.genre}</div>
+                <div class="movie-rating">⭐ ${m.rating}/10</div>
+                <button class="btn btn-primary" onclick="addToWatchlist(${m.id})">➕ Add</button></div></div>
+            `).join('') || '<p>No recommendations. Watch some movies!</p>';
+        }
+
+        function addToWatchlist(movieId) {
+            if (currentUserData.watchlist.includes(movieId)) { showToast("Already in watchlist!", true); return; }
+            if (currentUserData.watched.includes(movieId)) { showToast("Already watched!", true); return; }
+            currentUserData.watchlist.push(movieId);
+            saveUserData(currentUser.username, { watchlist: currentUserData.watchlist });
+            showToast("✅ Added to watchlist!");
+            refreshAll();
+        }
+
+        function removeFromWatchlist(movieId) {
+            currentUserData.watchlist = currentUserData.watchlist.filter(id => id !== movieId);
+            saveUserData(currentUser.username, { watchlist: currentUserData.watchlist });
+            showToast("🗑️ Removed from watchlist");
+            refreshAll();
+        }
+
+        function markAsWatched(movieId) {
+            if (currentUserData.watched.includes(movieId)) { showToast("Already watched!", true); return; }
+            currentUserData.watchlist = currentUserData.watchlist.filter(id => id !== movieId);
+            currentUserData.watched.push(movieId);
+            saveUserData(currentUser.username, { watchlist: currentUserData.watchlist, watched: currentUserData.watched });
+            showToast("✅ Marked as watched!");
+            refreshAll();
+        }
+
+        function rateMovie(movieId, rating) {
+            currentUserData.ratings[movieId] = rating;
+            saveUserData(currentUser.username, { ratings: currentUserData.ratings });
+            showToast(`⭐ Rated ${rating} stars!`);
+            refreshAll();
+        }
+
+        function addReview(movieId) {
+            const reviewText = document.getElementById(`review-${movieId}`)?.value;
+            if (reviewText) {
+                currentUserData.reviews[movieId] = reviewText;
+                saveUserData(currentUser.username, { reviews: currentUserData.reviews });
+                showToast("📝 Review saved!");
+                refreshAll();
+            }
+        }
+
+        function renderWatchlist() {
+            if (currentUserData.watchlist.length === 0) {
+                document.getElementById('watchlistContainer').innerHTML = '<p style="text-align:center; padding:40px;">📭 Your watchlist is empty.</p>';
+                return;
+            }
+            document.getElementById('watchlistContainer').innerHTML = currentUserData.watchlist.map(movieId => {
+                const movie = getMovieById(movieId);
+                return `<div class="list-item"><div><strong>${movie.poster} ${movie.title}</strong><br>${movie.year} | ${movie.genre}</div>
+                <div><button class="btn btn-primary" onclick="markAsWatched(${movie.id})">✅ Watched</button>
+                <button class="btn btn-danger" onclick="removeFromWatchlist(${movie.id})">🗑️ Remove</button></div></div>`;
+            }).join('');
+        }
+
+        function renderWatched() {
+            if (currentUserData.watched.length === 0) {
+                document.getElementById('watchedContainer').innerHTML = '<p style="text-align:center; padding:40px;">🎬 No watched movies yet.</p>';
+                return;
+            }
+            document.getElementById('watchedContainer').innerHTML = currentUserData.watched.map(movieId => {
+                const movie = getMovieById(movieId);
+                const currentRating = currentUserData.ratings[movieId] || 0;
+                let starsHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    starsHtml += `<span class="star ${currentRating >= i ? 'selected' : ''}" onclick="rateMovie(${movie.id}, ${i})">★</span>`;
+                }
+                return `<div class="list-item"><div><strong>${movie.poster} ${movie.title}</strong><br>${movie.year} | ${movie.genre}<br><div class="stars">${starsHtml}</div>
+                <textarea id="review-${movie.id}" class="review-text" rows="2" placeholder="Write your review...">${currentUserData.reviews[movieId] || ''}</textarea>
+                <button class="btn btn-warning" onclick="addReview(${movie.id})">💾 Save Review</button></div></div>`;
+            }).join('');
+        }
+
+        function renderRecommendationsPage() {
+            const recs = getRecommendations();
+            document.getElementById('recommendationsGrid').innerHTML = recs.map(m => `
+                <div class="movie-card"><div class="movie-poster">${m.poster}</div>
+                <div class="movie-info"><div class="movie-title">${m.title}</div>
+                <div class="movie-year">${m.year} | ${m.genre}</div>
+                <button class="btn btn-primary" onclick="addToWatchlist(${m.id})">➕ Add to Watchlist</button></div></div>
+            `).join('') || '<p>Watch more movies to get recommendations!</p>';
+        }
+
+        function updateProfile() {
+            document.getElementById('favGenre').innerHTML = getFavoriteGenre();
+        }
+
         function showTab(tabId) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            // Remove active class from all buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            // Show selected tab
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            // Add active class to clicked button
             event.target.classList.add('active');
-            
-            // Refresh data when switching tabs
             refreshAll();
         }
 
-        // Logout function
+        // ========== AUTHENTICATION UI ==========
+        function showAuthScreen() {
+            document.getElementById('authContainer').innerHTML = `
+                <div class="auth-overlay">
+                    <div class="auth-card">
+                        <h2>🎬 MovieWatch+</h2>
+                        <div id="authForm">
+                            <input type="text" id="authUsername" placeholder="Username" autocomplete="off">
+                            <input type="password" id="authPassword" placeholder="Password">
+                            <button onclick="register()">Create Account</button>
+                            <div class="switch" onclick="switchToLogin()">Already have an account? Login →</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('appContent').style.display = 'none';
+        }
+
+        function switchToLogin() {
+            document.getElementById('authForm').innerHTML = `
+                <input type="text" id="authUsername" placeholder="Username" autocomplete="off">
+                <input type="password" id="authPassword" placeholder="Password">
+                <button onclick="login()">Login</button>
+                <div class="switch" onclick="switchToRegister()">Don't have an account? Register →</div>
+            `;
+        }
+
+        function switchToRegister() {
+            document.getElementById('authForm').innerHTML = `
+                <input type="text" id="authUsername" placeholder="Username" autocomplete="off">
+                <input type="password" id="authPassword" placeholder="Password">
+                <button onclick="register()">Create Account</button>
+                <div class="switch" onclick="switchToLogin()">Already have an account? Login →</div>
+            `;
+        }
+
+        function register() {
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value;
+            if (!username || !password) { showToast("Enter username and password", true); return; }
+            if (users.find(u => u.username === username)) { showToast("Username already exists!", true); return; }
+            users.push({ username, password, watchlist: [], watched: [], ratings: {}, reviews: {}, joinDate: new Date().toISOString() });
+            localStorage.setItem('moviewatch_users', JSON.stringify(users));
+            showToast("Account created! Please login.");
+            switchToLogin();
+        }
+
+        function login() {
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const user = users.find(u => u.username === username && u.password === password);
+            if (!user) { showToast("Invalid username or password", true); return; }
+            currentUser = user;
+            document.getElementById('authContainer').innerHTML = '';
+            document.getElementById('appContent').style.display = 'block';
+            refreshAll();
+        }
+
         function logout() {
-            showToast("👋 Logged out successfully!");
-            // Reset data for demo purposes
-            watchlist = [1, 3];
-            watched = [];
-            ratings = {};
-            reviews = {};
-            saveData();
-            refreshAll();
+            currentUser = null;
+            document.getElementById('appContent').style.display = 'none';
+            showAuthScreen();
+            showToast("Logged out successfully!");
         }
 
-        // ============================================
-        // INITIALIZE
-        // ============================================
-        refreshAll();
-        
-        // Add search functionality (bonus feature)
-        const searchContainer = document.createElement('div');
-        searchContainer.className = 'search-container';
-        searchContainer.innerHTML = `
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search for movies (e.g., Inception, Dark Knight)...">
-            <button class="search-btn" onclick="searchMovies()">Search</button>
-        `;
-        document.querySelector('.container').insertBefore(searchContainer, document.querySelector('.container').firstChild);
-        
+        // Check if user is already logged in
+        if (localStorage.getItem('moviewatch_users') && JSON.parse(localStorage.getItem('moviewatch_users')).length > 0) {
+            showAuthScreen();
+        } else {
+            // Create demo account for first-time users
+            users = [{ username: "demo", password: "demo", watchlist: [1], watched: [3], ratings: {3:5}, reviews: {}, joinDate: new Date().toISOString() }];
+            localStorage.setItem('moviewatch_users', JSON.stringify(users));
+            showAuthScreen();
+        }
+
+        // Add search functionality
+        setTimeout(() => {
+            const container = document.querySelector('.container');
+            if (container && !document.getElementById('searchInput')) {
+                const searchDiv = document.createElement('div');
+                searchDiv.className = 'search-container';
+                searchDiv.innerHTML = `<input type="text" id="searchInput" class="search-input" placeholder="🔍 Search for movies..."><button class="search-btn" onclick="searchMovies()">Search</button>`;
+                container.insertBefore(searchDiv, container.firstChild);
+            }
+        }, 100);
+
         window.searchMovies = function() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            if (query.length < 2) {
-                showToast("Enter at least 2 characters to search", true);
-                return;
-            }
+            if (query.length < 2) { showToast("Enter at least 2 characters", true); return; }
             const results = allMovies.filter(m => m.title.toLowerCase().includes(query));
-            if (results.length === 0) {
-                showToast("No movies found. Try 'Inception' or 'Dark Knight'", true);
-                return;
-            }
-            // Show search results in a toast
+            if (results.length === 0) { showToast("No movies found", true); return; }
             showToast(`Found ${results.length} movie(s): ${results.map(m => m.title).join(', ')}`);
         };
     </script>
