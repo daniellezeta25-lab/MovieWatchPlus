@@ -421,14 +421,41 @@
                 <div class="movie-grid" id="recommendationsGrid"></div>
             </div>
 
-            <div id="profile" class="tab-content">
-                <div class="profile-card">
-                    <h2>👤 User Profile</h2>
-                    <p><strong>Username:</strong> <span id="profileUsername"></span></p>
-                    <p><strong>Member Since:</strong> <span id="memberSince"></span></p>
-                    <p><strong>Favorite Genre:</strong> <span id="favGenre">-</span></p>
-                </div>
-            </div>
+           <div id="profile" class="tab-content">
+    <div class="profile-card">
+        <h2>👤 User Profile</h2>
+        <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+        <p><strong>Member Since:</strong> <span id="memberSince"></span></p>
+        <p><strong>Favorite Genre:</strong> <span id="favGenre">-</span></p>
+    </div>
+
+    <!-- ADD NEW MOVIE FORM -->
+    <div class="profile-card" style="margin-top: 20px;">
+        <h3>➕ Add a New Movie</h3>
+        <p style="color: #666; font-size: 12px; margin-bottom: 15px;">Add movies that aren't in our database yet!</p>
+        
+        <input type="text" id="newMovieTitle" placeholder="Movie Title" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ddd;">
+        
+        <input type="number" id="newMovieYear" placeholder="Year" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ddd;">
+        
+        <select id="newMovieGenre" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ddd;">
+            <option value="Action">🎬 Action</option>
+            <option value="Sci-Fi">🚀 Sci-Fi</option>
+            <option value="Drama">🎭 Drama</option>
+            <option value="Comedy">😂 Comedy</option>
+            <option value="Thriller">🔪 Thriller</option>
+            <option value="Horror">👻 Horror</option>
+            <option value="Romance">💕 Romance</option>
+            <option value="Crime">🔫 Crime</option>
+            <option value="Animation">🐭 Animation</option>
+            <option value="War">⚔️ War</option>
+        </select>
+        
+        <input type="text" id="newMoviePoster" placeholder="Poster Emoji (e.g., 🎬, 🚀, 🦇)" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ddd;">
+        
+        <button class="btn btn-primary" onclick="addNewMovie()" style="width: 100%; padding: 12px;">➕ Add Movie to Database</button>
+    </div>
+</div>
         </div>
 
         <div class="footer">
@@ -744,6 +771,56 @@
             if (results.length === 0) { showToast("No movies found", true); return; }
             showToast(`Found ${results.length} movie(s): ${results.map(m => m.title).join(', ')}`);
         };
+        // ========== ADD NEW MOVIE FUNCTION ==========
+function addNewMovie() {
+    const title = document.getElementById('newMovieTitle').value.trim();
+    const year = document.getElementById('newMovieYear').value;
+    const genre = document.getElementById('newMovieGenre').value;
+    let poster = document.getElementById('newMoviePoster').value.trim();
+    
+    if (!title) {
+        showToast("Please enter a movie title!", true);
+        return;
+    }
+    if (!year || year < 1888 || year > 2026) {
+        showToast("Please enter a valid year (1888-2026)!", true);
+        return;
+    }
+    
+    const exists = allMovies.some(m => m.title.toLowerCase() === title.toLowerCase());
+    if (exists) {
+        showToast("This movie already exists in the database!", true);
+        return;
+    }
+    
+    if (!poster) {
+        const defaultPosters = {
+            "Action": "⚔️", "Sci-Fi": "🚀", "Drama": "🎭", "Comedy": "😂",
+            "Thriller": "🔪", "Horror": "👻", "Romance": "💕", "Crime": "🔫",
+            "Animation": "🐭", "War": "⚔️"
+        };
+        poster = defaultPosters[genre] || "🎬";
+    }
+    
+    const newId = allMovies.length + 1;
+    const newMovie = {
+        id: newId,
+        title: title,
+        year: parseInt(year),
+        genre: genre,
+        poster: poster,
+        rating: 0
+    };
+    
+    allMovies.push(newMovie);
+    
+    document.getElementById('newMovieTitle').value = '';
+    document.getElementById('newMovieYear').value = '';
+    document.getElementById('newMoviePoster').value = '';
+    
+    showToast(`✅ "${title}" has been added to the database!`);
+    refreshAll();
+}
     </script>
 </body>
 </html>
